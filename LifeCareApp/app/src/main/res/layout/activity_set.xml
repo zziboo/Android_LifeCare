@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.zziboo.lifecareapp.SetActivity"
+    android:background="@drawable/background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="72dp"
+            android:layout_height="40dp"
+            android:background="@drawable/startbtn"
+            android:text="on/off"
+            android:layout_weight="1"
+            android:onClick="onSetButtonClick"
+            android:id="@+id/onsetbtn"/>
+
+        <Button
+            android:layout_width="72dp"
+            android:layout_height="40dp"
+            android:background="@drawable/startbtn"
+            android:text="running"
+            android:layout_weight="1"
+            android:onClick="onSetButtonClick"
+            android:id="@+id/runsetbtn"/>
+
+        <Button
+            android:layout_width="72dp"
+            android:layout_height="40dp"
+            android:background="@drawable/startbtn"
+            android:text="message"
+            android:layout_weight="1"
+            android:onClick="onSetButtonClick"
+            android:id="@+id/msgsetbtn"/>
+
+        <Button
+            android:layout_width="72dp"
+            android:layout_height="40dp"
+            android:background="@drawable/startbtn"
+            android:text="GPS"
+            android:layout_weight="1"
+            android:onClick="onSetButtonClick"
+            android:id="@+id/gpssetbtn"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:id="@+id/fragment_container"></LinearLayout>
+
+</LinearLayout>

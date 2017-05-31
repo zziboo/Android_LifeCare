@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="25dp"
+        android:id="@+id/settext"
+        android:text="On/Off Setting : " />
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alarm On/Off      "
+            android:id="@+id/alarmSwitch"
+            android:textSize="25dp"
+            android:onClick="onOffSetting"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"/>
+
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Message On/Off "
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/alarmSwitch"
+            android:textSize="25dp"
+            android:id="@+id/msgSwitch"
+            android:onClick="onOffSetting"
+            android:layout_marginTop="10dp"/>
+
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GPS On/Off         "
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/msgSwitch"
+            android:textSize="25dp"
+            android:id="@+id/gpsSwitch"
+            android:onClick="onOffSetting"
+            android:layout_marginTop="10dp"/>
+    </RelativeLayout>
+
+
+</LinearLayout>
