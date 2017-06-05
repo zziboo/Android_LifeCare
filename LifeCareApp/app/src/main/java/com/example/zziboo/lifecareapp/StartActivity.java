@@ -28,10 +28,10 @@ public class StartActivity extends AppCompatActivity {
     TextView senText; // 가속도 센서 출력 Text
 
     Button gpsPositionButton; // Position 출력하는 Google Map Activity 실행 Button
-
+/*
     Intent senserService; // 가속도 service 연결 변수
-    BroadcastReceiver sensorReceiver; // broadcast로 가속도 값 받아옴
-    Intent gpsService;
+    BroadcastReceiver sensorReceiver; // broadcast로 가속도 값 받아옴*/
+    private GpsService gps;
 
     BroadcastReceiver gpsReveiver; // gps broadcast
     double latitude, longitude;
@@ -45,15 +45,25 @@ public class StartActivity extends AppCompatActivity {
 
         gpsText = (TextView) findViewById(R.id.gpstxt);
         senText = (TextView) findViewById(R.id.sentxt);
-
+/*
         senserService = new Intent(this, SensorService.class);
-        startService(senserService);
-
+        startService(senserService);*/
+/*
         gpsService = new Intent(this, GpsService.class);
-        startService(gpsService);
+        startService(gpsService);*/
 
+        gps = new GpsService(StartActivity.this);
+
+        if(gps.canGetLocation()){
+            longitude = gps.getLongitude();
+            latitude = gps.getLatitude();
+            gpsText.setText("Longitude : " + longitude + ", Latitude : " + latitude);
+        }else{
+            gps.showSettingsAlert();
+        }
+/*
         sensorReceiver = new SensorReceiver();
-        senserService = new Intent(this, SensorService.class);
+        senserService = new Intent(this, SensorService.class);*/
 
         gpsReveiver = new GPSReceiver();
 
@@ -81,7 +91,7 @@ public class StartActivity extends AppCompatActivity {
         filter.addAction("com.example.zziboo.lifecareapp.Service.SensorService.MY_ACTION");
         registerReceiver(myReceiver, filter);
     }
-
+/*
     public void setSen(){
         try{
             IntentFilter mainFilter = new IntentFilter("com.androday.test.step");
@@ -91,14 +101,20 @@ public class StartActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
-    }
-
+    }*/
+/*
     public void setGps(){
         IntentFilter gpsFilter = new IntentFilter();
         registerReceiver(gpsReveiver, gpsFilter);
         startService(gpsService);
     }
+*/
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //gps.stopUsingGPS();
+    }
 
     //********************************************//
     //*****************옵션 메뉴 *****************//
