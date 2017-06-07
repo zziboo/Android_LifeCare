@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.zziboo.lifecareapp.StartActivity"
+    android:background="@drawable/background"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="368dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteX="8dp">
+
+        <TextView
+            android:layout_marginTop="25dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="25dp"
+            android:text="GPS : "/>
+
+        <TextView
+            android:layout_marginTop="25dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="25dp"
+            android:id="@+id/gpstxt" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_marginTop="25dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="25dp"
+            android:text="걸음 수 : "/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:textSize="120dp"
+            android:text="0"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:id="@+id/sentxt" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="368dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteX="8dp">
+
+        <TextView
+            android:layout_marginTop="25dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="25dp"
+            android:text="이동거리 : "/>
+
+        <TextView
+            android:layout_marginTop="25dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="25dp"
+            android:id="@+id/distancetxt"/>
+
+    </LinearLayout>
+
+    <Button
+        android:layout_marginTop="60dp"
+        android:layout_width="150dp"
+        android:layout_height="35dp"
+        android:layout_gravity="right"
+        android:text="Reset Step"
+        android:id="@+id/resetStepbtn"
+        android:background="@drawable/startbtn" />
+
+    <Button
+        android:layout_marginTop="5dp"
+        android:layout_width="150dp"
+        android:layout_height="35dp"
+        android:layout_gravity="right"
+        android:text="GPS Position Check"
+        android:id="@+id/gpsmapbtn"
+        android:background="@drawable/startbtn" />
+
+</LinearLayout>

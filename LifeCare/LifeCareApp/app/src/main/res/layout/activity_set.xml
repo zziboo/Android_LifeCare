@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.zziboo.lifecareapp.SetActivity"
+    android:background="@drawable/background">
+
+    <Button
+        android:background="@drawable/startbtn"
+        android:layout_width="48dp"
+        android:layout_height="35dp"
+        android:layout_gravity="right"
+        android:text="Close"
+        android:onClick="closeClick"
+        android:layout_margin="5dp"
+        android:id="@+id/onsetbtn"/>
+
+    <TextView
+        android:paddingLeft="10dp"
+        android:layout_marginTop="25dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="25dp"
+        android:id="@+id/settext"
+        android:text="On/Off Setting : " />
+
+
+    <RelativeLayout
+        android:layout_marginTop="25dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Switch
+            android:layout_marginBottom="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Step Count Off/On   "
+            android:id="@+id/stepSwitch"
+            android:textSize="25dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"/>
+
+        <Switch
+            android:layout_marginBottom="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Message Off/On       "
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/stepSwitch"
+            android:textSize="25dp"
+            android:id="@+id/msgSwitch"
+            android:layout_marginTop="10dp"/>
+
+        <Switch
+            android:layout_marginBottom="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GPS Off/On                "
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/msgSwitch"
+            android:textSize="25dp"
+            android:id="@+id/gpsSwitch"
+            android:layout_marginTop="10dp"/>
+    </RelativeLayout>
+
+
+    <TextView
+        android:paddingLeft="10dp"
+        android:layout_marginTop="25dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="25dp"
+        android:text="Send Message Time Setting : " />
+
+
+    <EditText
+        android:layout_marginLeft="20dp"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:textSize="25dp"
+        android:id="@+id/alarmtxt"/>
+
+    <EditText
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="25dp"
+        android:id="@+id/alarmMsgtxt"/>
+
+    <Button
+        android:layout_marginRight="20dp"
+        android:background="@drawable/startbtn"
+        android:layout_marginLeft="10dp"
+        android:layout_width="55dp"
+        android:layout_height="40dp"
+        android:text="SAVE"
+        android:layout_gravity="right"
+        android:onClick="saveOnClick"
+        android:id="@+id/savebtn"/>
+</LinearLayout>
