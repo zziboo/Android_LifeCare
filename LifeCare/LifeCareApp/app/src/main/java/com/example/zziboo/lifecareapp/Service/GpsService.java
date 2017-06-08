@@ -1,11 +1,17 @@
 package com.example.zziboo.lifecareapp.Service;
 
+import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -15,9 +21,15 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.zziboo.lifecareapp.DataBase.MessageDBHelper;
+import com.google.android.gms.maps.model.LatLng;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -28,6 +40,17 @@ import java.util.TimerTask;
 public class GpsService extends Service implements LocationListener{
     private final Context mContext;
     public static final String BROADCAST_ACTION = "com.example.zziboo.lifecareapp.Service.GpsService";
+
+    public int timeset = 3;
+    public String alarmtxt = "";
+
+    private AlarmManager alarmMgr;
+
+    MessageDBHelper myMsgdb;
+
+    ArrayList messageNumber;
+
+    private List<LatLng> latLngList;
 
     boolean checkGPS = false;
     boolean checkNetwork = false;
@@ -46,17 +69,30 @@ public class GpsService extends Service implements LocationListener{
     private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1;
     protected LocationManager locationManager;
 
-
+    private Handler handler=new Handler();
+    private Runnable runnable=new Runnable() {
+        @Override
+        public void run() {
+            sendSMS();
+            timer();
+        }
+    };
     @Override
     public void onCreate() {
         super.onCreate();
-        intent = new Intent(BROADCAST_ACTION);
+
+        timer();
         getLocation();
         Log.d("Start Loc : ", getLongitude() + " " + getLatitude());
+        runnable.run();
+    }
+
+    private void timer(){
+        handler.postDelayed(runnable,5000);
     }
 
     public GpsService(){
-        mContext = null;
+        mContext = this;
         Log.d("Start Loc : ", "GpsService() " + getLongitude() + " " + getLatitude());
     }
 
@@ -73,9 +109,9 @@ public class GpsService extends Service implements LocationListener{
 
     private Location getLocation() {
         Log.d("GPS_SERVICE", "getLocation");
+        //latLngList.add(new LatLng(getLatitude(), getLongitude()));
         try {
-            locationManager = (LocationManager) mContext
-                    .getSystemService(LOCATION_SERVICE);
+            locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
             // getting GPS status
             checkGPS = locationManager
@@ -86,12 +122,12 @@ public class GpsService extends Service implements LocationListener{
                     .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
             if (!checkGPS && !checkNetwork) {
-                Toast.makeText(mContext, "No Service Provider Available", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "No Service Provider Available", Toast.LENGTH_SHORT).show();
             } else {
                 this.canGetLocation = true;
                 // First get location from Network Provider
                 if (checkNetwork) {
-                    Toast.makeText(mContext, "Network", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Network", Toast.LENGTH_SHORT).show();
 
                     try {
                         locationManager.requestLocationUpdates(
@@ -142,6 +178,7 @@ public class GpsService extends Service implements LocationListener{
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         sendLocationBroadcast(intent);
         return loc;
     }
@@ -201,6 +238,7 @@ public class GpsService extends Service implements LocationListener{
     @Override
     public void onLocationChanged(Location location) {
         this.loc = location;
+        timer();
         getLatitude();
         getLongitude();
         Log.d("Loc Change : ", getLongitude() + " " + getLatitude());
@@ -222,9 +260,77 @@ public class GpsService extends Service implements LocationListener{
 
     }
 
+    public void sendSMS(){
+        myMsgdb = new MessageDBHelper(this);
+        messageNumber = new ArrayList();
+        alarmtxt = "다음 공간에 지속적으로 있습니다.";
+
+        Cursor res = myMsgdb.getData();
+
+        //Cursor 받아와 Message 보내는 함수
+        while(res.moveToNext()){
+            messageNumber.add(Integer.parseInt(res.getString(0)));
+        };
+
+        PendingIntent sentIntent = PendingIntent.getBroadcast(this, 0, new Intent("SMS_SENT_ACTION"), 0);
+        PendingIntent deliveredIntent = PendingIntent.getBroadcast(this, 0, new Intent("SMS_DELIVERED_ACTION"), 0);
+
+        registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                switch(getResultCode()){
+                    case Activity.RESULT_OK:
+                        // 전송 성공
+                        Toast.makeText(mContext, "전송 완료", Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
+                        // 전송 실패
+                        Toast.makeText(mContext, "전송 실패", Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_NO_SERVICE:
+                        // 서비스 지역 아님
+                        Toast.makeText(mContext, "서비스 지역이 아닙니다", Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_RADIO_OFF:
+                        // 무선 꺼짐
+                        Toast.makeText(mContext, "무선(Radio)가 꺼져있습니다", Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_NULL_PDU:
+                        // PDU 실패
+                        Toast.makeText(mContext, "PDU Null", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        }, new IntentFilter("SMS_SENT_ACTION"));
+
+        registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                switch (getResultCode()){
+                    case Activity.RESULT_OK:
+                        // 도착 완료
+                        Toast.makeText(mContext, "SMS 도착 완료", Toast.LENGTH_SHORT).show();
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        // 도착 안됨
+                        Toast.makeText(mContext, "SMS 도착 실패", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        }, new IntentFilter("SMS_DELIVERED_ACTION"));
+
+        SmsManager mSmsManager = SmsManager.getDefault();
+        //for(int i=0; i<messageNumber.size(); ++i) {
+        Log.e("SEND MSG ", "");
+            mSmsManager.sendTextMessage("01088104625", null, alarmtxt, sentIntent, deliveredIntent);
+        //}
+    }
+
     private void sendLocationBroadcast(Intent intent){
+        intent = new Intent(BROADCAST_ACTION);
         intent.putExtra("latitude", latitude+"");
         intent.putExtra("longitude", longitude+"");
+        //intent.putStringArrayListExtra("GoogleLine", latLngList);
         sendBroadcast(intent);
     }
 }

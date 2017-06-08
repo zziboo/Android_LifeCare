@@ -1,5 +1,6 @@
 package com.example.zziboo.lifecareapp;
 
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -73,6 +74,17 @@ public class StartActivity extends AppCompatActivity {
                 startService(sensorService);
             }
         });
+
+        // service가 실행중인지 확인하는 구문
+        if(isMyServiceRunning(SensorService.class)){
+            Toast.makeText(this, "Step Service is Running..", Toast.LENGTH_SHORT).show();
+
+        }
+        // service가 실행중인지 확인하는 구문
+        if(isMyServiceRunning(GpsService.class)){
+            Toast.makeText(this, "GPS Service is Running..", Toast.LENGTH_SHORT).show();
+
+        }
     }
 
     @Override
@@ -88,7 +100,7 @@ public class StartActivity extends AppCompatActivity {
             String log = intent.getStringExtra("longitude");
             Log.d("Gps", "lon : " + log + ", lat : " + lat);
 
-            gpsText.setText("Gps : " + "Longitude : " + log + ", Latitude : " + lat);
+            gpsText.setText("Longitude : " + log + "\n Latitude : " + lat);
         }
     };
 
@@ -138,5 +150,17 @@ public class StartActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+
+    // Service가 진행중인지 상태를 확인하는 method
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.example.zziboo.lifecareapp.Service.GpsService;
 import com.example.zziboo.lifecareapp.Service.SensorService;
 
 
@@ -51,6 +52,11 @@ public class SetActivity extends AppCompatActivity implements CompoundButton.OnC
         if(isMyServiceRunning(SensorService.class)){
             Toast.makeText(this, "Step Service is Running..", Toast.LENGTH_SHORT).show();
             stepSwitch.setChecked(true);
+        }
+        // service가 실행중인지 확인하는 구문
+        if(isMyServiceRunning(GpsService.class)){
+            Toast.makeText(this, "GPS Service is Running..", Toast.LENGTH_SHORT).show();
+            msgSwitch.setChecked(true);
         }
     }
 
