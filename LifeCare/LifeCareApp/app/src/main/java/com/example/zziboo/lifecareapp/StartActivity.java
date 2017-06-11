@@ -38,10 +38,6 @@ public class StartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        // receiver 실행
-        registerReceiver(getGpsReceiver, new IntentFilter(GpsService.BROADCAST_ACTION));
-        registerReceiver(getSensorReceiver, new IntentFilter(SensorService.MY_ACTION));
-
         // 필요 view 선언
         gpsText = (TextView) findViewById(R.id.gpstxt);
         senText = (TextView) findViewById(R.id.sentxt);
@@ -50,11 +46,11 @@ public class StartActivity extends AppCompatActivity {
         //service intent 선언
         gpsService = new Intent(this, GpsService.class);
         sensorService = new Intent(this, SensorService.class);
-
+/*
         //각 service 실행
         startService(gpsService);
         startService(sensorService);
-
+*/
         //google map 실행 버튼
         gpsPositionButton = (Button)findViewById(R.id.gpsmapbtn);
         gpsPositionButton.setOnClickListener(new View.OnClickListener() { // Gps Map Č­ļé ŋŽ°á ļŪ―šģĘ
@@ -76,14 +72,22 @@ public class StartActivity extends AppCompatActivity {
         });
 
         // service가 실행중인지 확인하는 구문
-        if(isMyServiceRunning(SensorService.class)){
+        if(isMyServiceRunning(SensorService.class)) {
+            // receiver 실행
+            registerReceiver(getSensorReceiver, new IntentFilter(SensorService.MY_ACTION));
             Toast.makeText(this, "Step Service is Running..", Toast.LENGTH_SHORT).show();
-
+        }else{
+            senText.setText("서비스가 실행중이 아닙니다.");
+            distanceText.setText("서비스가 실행중이 아닙니다.");
         }
         // service가 실행중인지 확인하는 구문
         if(isMyServiceRunning(GpsService.class)){
+            gpsText.setText("서비스가 실행중입니다.");
+            // receiver 실행
+            registerReceiver(getGpsReceiver, new IntentFilter(GpsService.BROADCAST_ACTION));
             Toast.makeText(this, "GPS Service is Running..", Toast.LENGTH_SHORT).show();
-
+        }else{
+            gpsText.setText("서비스가 실행중이 아닙니다.");
         }
     }
 
@@ -151,7 +155,6 @@ public class StartActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-
 
     // Service가 진행중인지 상태를 확인하는 method
     private boolean isMyServiceRunning(Class<?> serviceClass) {

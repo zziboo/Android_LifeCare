@@ -67,12 +67,31 @@
         android:text="Send Message Time Setting : " />
 
 
-    <EditText
-        android:layout_marginLeft="20dp"
-        android:layout_width="220dp"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:layout_marginLeft="20dp"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:textSize="25dp"
+            android:hint="30"
+            android:id="@+id/alarmtxt"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(m)"/>
+    </LinearLayout>
+
+    <TextView
+        android:paddingLeft="10dp"
+        android:layout_marginTop="25dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="25dp"
-        android:id="@+id/alarmtxt"/>
+        android:text="Send Message Text Setting : " />
 
     <EditText
         android:layout_marginLeft="20dp"

@@ -45,8 +45,19 @@ public class GpsDBHelper extends SQLiteOpenHelper{
         return res;
     }
 
-    public Integer deleteGps(String phoneNumber){
+    public Integer deleteGps(String gpsLocation){
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete("gpsTable", "title = ? ", new String[]{phoneNumber});
+        return db.delete("gpsTable", "title = ? ", new String[]{gpsLocation});
+    }
+
+    public String selectGps(String gpsLocation){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String locationTitle = null;
+        Cursor res = db.rawQuery("select * from gpsTable", null);
+        while(res.moveToNext()){
+            if(res.getString(1) == gpsLocation)
+                locationTitle = res.getString(0);
+        }
+        return locationTitle;
     }
 }

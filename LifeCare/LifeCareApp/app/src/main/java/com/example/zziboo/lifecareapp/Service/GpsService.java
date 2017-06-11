@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
@@ -25,7 +26,9 @@ import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.zziboo.lifecareapp.DataBase.GpsDBHelper;
 import com.example.zziboo.lifecareapp.DataBase.MessageDBHelper;
+import com.example.zziboo.lifecareapp.SetActivity;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -41,12 +44,11 @@ public class GpsService extends Service implements LocationListener{
     private final Context mContext;
     public static final String BROADCAST_ACTION = "com.example.zziboo.lifecareapp.Service.GpsService";
 
-    public int timeset = 3;
+    public int timeset;
     public String alarmtxt = "";
 
-    private AlarmManager alarmMgr;
-
     MessageDBHelper myMsgdb;
+    GpsDBHelper myGpsdb;
 
     ArrayList messageNumber;
 
@@ -77,9 +79,18 @@ public class GpsService extends Service implements LocationListener{
             timer();
         }
     };
+
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        pref = getSharedPreferences(SetActivity.MESSAGE_DATA, Activity.MODE_PRIVATE);
+        editor = pref.edit();
+        timeset = pref.getInt("TIMESET", 30);
+        alarmtxt = pref.getString("MSG",  "다음과 같은 장소에서 현재 움직임이 없습니다.");
 
         timer();
         getLocation();
@@ -88,7 +99,7 @@ public class GpsService extends Service implements LocationListener{
     }
 
     private void timer(){
-        handler.postDelayed(runnable,5000);
+        handler.postDelayed(runnable, timeset * 60000); // 1초 = 1000
     }
 
     public GpsService(){
@@ -105,6 +116,12 @@ public class GpsService extends Service implements LocationListener{
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
         getLocation();
+    }
+
+    @Override
+    public boolean stopService(Intent name) {
+        handler.removeCallbacks(runnable);
+        return super.stopService(name);
     }
 
     private Location getLocation() {
@@ -262,14 +279,14 @@ public class GpsService extends Service implements LocationListener{
 
     public void sendSMS(){
         myMsgdb = new MessageDBHelper(this);
-        messageNumber = new ArrayList();
-        alarmtxt = "다음 공간에 지속적으로 있습니다.";
+        myGpsdb = new GpsDBHelper(this);
 
+        messageNumber = new ArrayList();
         Cursor res = myMsgdb.getData();
 
         //Cursor 받아와 Message 보내는 함수
         while(res.moveToNext()){
-            messageNumber.add(Integer.parseInt(res.getString(0)));
+            messageNumber.add(res.getString(0));
         };
 
         PendingIntent sentIntent = PendingIntent.getBroadcast(this, 0, new Intent("SMS_SENT_ACTION"), 0);
@@ -320,10 +337,20 @@ public class GpsService extends Service implements LocationListener{
         }, new IntentFilter("SMS_DELIVERED_ACTION"));
 
         SmsManager mSmsManager = SmsManager.getDefault();
-        //for(int i=0; i<messageNumber.size(); ++i) {
-        Log.e("SEND MSG ", "");
-            mSmsManager.sendTextMessage("01088104625", null, alarmtxt, sentIntent, deliveredIntent);
-        //}
+        for(int i=0; i<messageNumber.size(); ++i) {
+            Log.e("SEND MSG : ", messageNumber.get(i).toString());
+            String locationTitle;
+            if(myGpsdb.selectGps(loc.getLatitude() + "/" + loc.getLongitude()) != null){
+                locationTitle = myGpsdb.selectGps(loc.getLatitude() + "/" + loc.getLongitude());
+            }else{
+                locationTitle = "Latitude : " + loc.getLatitude() + "/Longitude : " + loc.getLongitude();
+            }
+            Log.e("MSG : ", locationTitle + " " + alarmtxt);
+            mSmsManager.sendTextMessage(messageNumber.get(i).toString(), null, locationTitle + alarmtxt, sentIntent, deliveredIntent);
+        }
+        if(messageNumber.size() <= 0){
+            Toast.makeText(getApplicationContext(), "저장된 번호가 없습니다.",Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void sendLocationBroadcast(Intent intent){
